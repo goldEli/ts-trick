@@ -51,3 +51,21 @@ type GetParams<T extends Function> = T extends (...args: infer Args) => unknown
 
 const func = (a: number, b: number) => a + b;
 type params = GetParams<typeof func>;
+
+// 提取
+
+type GetReturnType<T extends Function> = T extends (...args: any[]) => infer Ret
+  ? Ret
+  : never;
+
+type Ret = GetReturnType<typeof func>;
+
+// 重新构造做变换
+const o = { a: 1, b: 1 }; // {A:1,B:1}
+
+type UppercaseKey<obj extends Record<string, any>> = {
+  [Key in keyof obj as Uppercase<Key & string>]: obj[Key]
+};
+
+
+type Result = UppercaseKey<typeof o>
