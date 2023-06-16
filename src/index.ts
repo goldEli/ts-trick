@@ -52,7 +52,9 @@ type GetParams<T extends Function> = T extends (...args: infer Args) => unknown
 const func = (a: number, b: number) => a + b;
 type params = GetParams<typeof func>;
 
-// 提取
+/**
+ * 提取
+*/
 
 type GetReturnType<T extends Function> = T extends (...args: any[]) => infer Ret
   ? Ret
@@ -60,7 +62,9 @@ type GetReturnType<T extends Function> = T extends (...args: any[]) => infer Ret
 
 type Ret = GetReturnType<typeof func>;
 
-// 重新构造做变换
+/**
+ * 重新构造做变换
+ */ 
 const o = { a: 1, b: 1 }; // {A:1,B:1}
 
 type UppercaseKey<obj extends Record<string, any>> = {
@@ -69,3 +73,13 @@ type UppercaseKey<obj extends Record<string, any>> = {
 
 
 type Result = UppercaseKey<typeof o>
+
+/**
+ * 递归
+ */
+
+// 长度不确定的字符串转为联合类型
+type StringToUnion<T extends string> = T extends `${infer First}${infer Last}` ? First | StringToUnion<Last> : never
+type Hello = StringToUnion<'hello'>
+
+// 数组长度做计数
