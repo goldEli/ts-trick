@@ -54,7 +54,7 @@ type params = GetParams<typeof func>;
 
 /**
  * 提取
-*/
+ */
 
 type GetReturnType<T extends Function> = T extends (...args: any[]) => infer Ret
   ? Ret
@@ -64,22 +64,83 @@ type Ret = GetReturnType<typeof func>;
 
 /**
  * 重新构造做变换
- */ 
+ */
 const o = { a: 1, b: 1 }; // {A:1,B:1}
 
 type UppercaseKey<obj extends Record<string, any>> = {
-  [Key in keyof obj as Uppercase<Key & string>]: obj[Key]
+  [Key in keyof obj as Uppercase<Key & string>]: obj[Key];
 };
 
-
-type Result = UppercaseKey<typeof o>
+type Result = UppercaseKey<typeof o>;
 
 /**
  * 递归
  */
 
 // 长度不确定的字符串转为联合类型
-type StringToUnion<T extends string> = T extends `${infer First}${infer Last}` ? First | StringToUnion<Last> : never
-type Hello = StringToUnion<'hello'>
+type StringToUnion<T extends string> = T extends `${infer First}${infer Last}`
+  ? First | StringToUnion<Last>
+  : never;
+type Hello = StringToUnion<"hello">;
 
 // 数组长度做计数
+
+/**
+ * 联合类型可简化
+ */
+type Union = "a" | "b" | "c";
+
+type UppercaseA<Item extends string> = Item extends "a"
+  ? Uppercase<Item>
+  : Item;
+
+type result = UppercaseA<Union>;
+
+/**
+ * 联合类型提取
+ */
+
+type MyExtract<T, U> = U extends T ? U : never;
+type u = "a" | "b" | "c" | "d";
+type extractRes = MyExtract<u, "a" | "b">;
+
+/**
+ * 函数重载
+ */
+type Func = (a: number, b: number) => number;
+declare const func1: Func;
+
+/**
+ * 扩展索引
+ * DeepRecord
+ */
+
+type Obj1 = {
+  a: number;
+  b: number;
+  c: {
+    d: number;
+    f: {
+      k: number;
+    };
+  };
+} & Record<string, any>;
+
+type DeepRecord<T extends Record<string, any>> = {
+  [Key in keyof T]: T[Key] extends Record<string, any>
+    ? DeepRecord<T[Key]> & Record<string, any>
+    : T[Key];
+} & Record<string, any>;
+
+const obj2: DeepRecord<Obj1> = {
+  a: 1,
+  b: 2,
+  m: 1,
+  c: {
+    d: 1,
+    f: {
+      k: 1,
+      c: 2,
+    },
+  },
+};
