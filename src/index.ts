@@ -144,3 +144,40 @@ const obj2: DeepRecord<Obj1> = {
     },
   },
 };
+
+/**
+ * 对象值互相影响
+ */
+
+type Test =
+  | {
+      aaa: "desc" | "asc";
+      bbb: false;
+      ccc: false;
+    }
+  | {
+      aaa: false;
+      bbb: "desc" | "asc";
+      ccc: false;
+    }
+  | {
+      aaa: false;
+      bbb: false;
+      ccc: "desc" | "asc";
+    };
+
+type GenerateType<Keys extends string> = {
+  [Key in Keys]: {
+    [Key1 in Key]: "desc" | "asc";
+  } & {
+    [Key2 in Exclude<Keys, Key>]: false;
+  };
+}[Keys];
+
+type res = GenerateType<"aaa" | "bbb" | "ccc">;
+
+const test: res = {
+  aaa: false,
+  bbb: false,
+  ccc: "asc",
+};
